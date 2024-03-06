@@ -374,5 +374,17 @@
       "prompt": "content"
     },
     "folder": "python"
+  },
+  "Kira-set": {
+    "file_name": "data_1000.json",
+    "columns": {
+      "messages": "messages"
+    },
+    "tags": {
+      "role_tag": "role",
+      "content_tag": "content",
+      "user_tag": "user",
+      "assistant_tag": "assistant"
+    }
   }
 }
