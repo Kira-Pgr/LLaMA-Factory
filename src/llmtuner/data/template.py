@@ -264,15 +264,14 @@ def _register_template(
 
 def _add_or_replace_eos_token(tokenizer: "PreTrainedTokenizer", eos_token: str) -> None:
     is_added = tokenizer.eos_token_id is None
-    is_oov = eos_token not in tokenizer.get_vocab()
-    tokenizer.add_special_tokens({"eos_token": eos_token})
+    num_added_tokens = tokenizer.add_special_tokens({"eos_token": eos_token})
 
     if is_added:
         logger.info("Add eos token: {}".format(tokenizer.eos_token))
     else:
         logger.info("Replace eos token: {}".format(tokenizer.eos_token))
 
-    if is_oov:
+    if num_added_tokens > 0:
         logger.warning("New tokens have been added, make sure `resize_vocab` is True.")
 
 
@@ -368,10 +367,12 @@ def get_template_and_fix_tokenizer(
         logger.info("Add pad token: {}".format(tokenizer.pad_token))
 
     if stop_words:
-        tokenizer.add_special_tokens(
+        num_added_tokens = tokenizer.add_special_tokens(
             dict(additional_special_tokens=stop_words), replace_additional_special_tokens=False
         )
         logger.info("Add {} to stop words.".format(",".join(stop_words)))
+        if num_added_tokens > 0:
+            logger.warning("New tokens have been added, make sure `resize_vocab` is True.")
 
     try:
         tokenizer.chat_template = _get_jinja_template(template, tokenizer)
@@ -456,7 +457,7 @@ _register_template(
     name="chatglm3",
     format_user=StringFormatter(slots=[{"token": "<|user|>"}, "\n", "{{content}}", {"token": "<|assistant|>"}]),
     format_assistant=StringFormatter(slots=["\n", "{{content}}"]),
-    format_system=StringFormatter(slots=[{"token": "[gMASK]"}, {"token": "sop"}]),
+    format_system=StringFormatter(slots=[{"token": "[gMASK]"}, {"token": "sop"}, "{{content}}"]),
     format_function=FunctionFormatter(slots=["{{name}}\n{{arguments}}"]),
     format_observation=StringFormatter(
         slots=[{"token": "<|observation|>"}, "\n", "{{content}}", {"token": "<|assistant|>"}]
