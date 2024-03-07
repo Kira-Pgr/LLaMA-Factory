@@ -377,6 +377,7 @@
   },
   "Kira-set": {
     "file_name": "data_1000.json",
+    "formatting": "sharegpt",
     "columns": {
       "messages": "messages"
     },
